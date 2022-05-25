@@ -1,12 +1,10 @@
-const dotenv = require('dotenv');
-dotenv.config();
-const mysql = require('mysql2');
+// net start mysql80 - for starting mysql server in windows
+require('dotenv').config();
+const Sequelize = require('sequelize').Sequelize; //Adding '.Sequelize' just to make VS Code's Intellisense work. You can also write const Sequelize = require('sequelize');
 
-const pool = mysql.createPool({
+const sequelize = new Sequelize('node_complete', 'root', process.env.DB_PWD, {
+	dialect: 'mysql',
 	host: 'localhost',
-	user: 'root',
-	database: 'node_complete',
-	password: process.env.DB_PWD,
 });
 
-module.exports = pool.promise();
+module.exports = sequelize;
