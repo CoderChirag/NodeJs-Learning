@@ -50,6 +50,7 @@ Product.init(
 	},
 	{
 		sequelize,
+		modelName: 'product',
 	}
 );
 
