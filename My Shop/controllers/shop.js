@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
 
+/** @type {import("express").RequestHandler} */
 exports.getProducts = (req, res, next) => {
 	Product.find()
 		.then(products => {
@@ -8,6 +9,7 @@ exports.getProducts = (req, res, next) => {
 				prods: products,
 				pageTitle: 'All Products',
 				path: '/products',
+				isAuthenticated: req.isLoggedIn,
 			});
 		})
 		.catch(err => {
@@ -15,6 +17,7 @@ exports.getProducts = (req, res, next) => {
 		});
 };
 
+/** @type {import("express").RequestHandler} */
 exports.getProduct = (req, res, next) => {
 	const prodId = req.params.productId;
 	Product.findById(prodId)
@@ -23,11 +26,13 @@ exports.getProduct = (req, res, next) => {
 				product,
 				pageTitle: product.title,
 				path: '/products',
+				isAuthenticated: req.isLoggedIn,
 			});
 		})
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.getIndex = (req, res, next) => {
 	Product.find()
 		.then(products => {
@@ -35,6 +40,7 @@ exports.getIndex = (req, res, next) => {
 				prods: products,
 				pageTitle: 'Shop',
 				path: '/',
+				isAuthenticated: req.isLoggedIn,
 			});
 		})
 		.catch(err => {
@@ -42,6 +48,7 @@ exports.getIndex = (req, res, next) => {
 		});
 };
 
+/** @type {import("express").RequestHandler} */
 exports.getCart = (req, res, next) => {
 	req.user
 		.populate('cart.items.product')
@@ -50,11 +57,13 @@ exports.getCart = (req, res, next) => {
 				path: '/cart',
 				pageTitle: 'Your Cart',
 				products: user.cart.items,
+				isAuthenticated: req.isLoggedIn,
 			});
 		})
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.postCart = (req, res, next) => {
 	const prodId = req.body.productId;
 	Product.findById(prodId)
@@ -67,6 +76,7 @@ exports.postCart = (req, res, next) => {
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.postDeleteCartProducts = (req, res, next) => {
 	const prodId = req.body.productId;
 	req.user
@@ -77,6 +87,7 @@ exports.postDeleteCartProducts = (req, res, next) => {
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.getOrders = (req, res, next) => {
 	Order.find({ 'user.userId': req.user })
 		.then(orders => {
@@ -84,11 +95,13 @@ exports.getOrders = (req, res, next) => {
 				path: '/orders',
 				pageTitle: 'Your Orders',
 				orders: orders,
+				isAuthenticated: req.isLoggedIn,
 			});
 		})
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.postOrder = (req, res, next) => {
 	req.user
 		.populate('cart.items.product')

@@ -1,13 +1,16 @@
 const Product = require('../models/product');
 
+/** @type {import("express").RequestHandler} */
 exports.getAddProduct = (req, res, next) => {
-	res.render('admin/edit-product', {
+	req.res.render('admin/edit-product', {
 		pageTitle: 'Add Product',
 		path: '/admin/add-product',
 		editing: false,
+		isAuthenticated: req.isLoggedIn,
 	});
 };
 
+/** @type {import("express").RequestHandler} */
 exports.postAddProduct = (req, res, next) => {
 	const title = req.body.title;
 	const imageUrl = req.body.imageUrl;
@@ -26,6 +29,7 @@ exports.postAddProduct = (req, res, next) => {
 	});
 };
 
+/** @type {import("express").RequestHandler} */
 exports.getEditProduct = (req, res, next) => {
 	const editMode = req.query.edit;
 	if (!editMode) {
@@ -39,11 +43,13 @@ exports.getEditProduct = (req, res, next) => {
 				path: '/admin/edit-product',
 				editing: editMode,
 				product,
+				isAuthenticated: req.isLoggedIn,
 			});
 		})
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.postEditProduct = (req, res, next) => {
 	const prodId = req.body.productId;
 	const updatedTitle = req.body.title;
@@ -64,6 +70,7 @@ exports.postEditProduct = (req, res, next) => {
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.getProducts = (req, res, next) => {
 	Product.find()
 		.then(products => {
@@ -71,11 +78,13 @@ exports.getProducts = (req, res, next) => {
 				prods: products,
 				pageTitle: 'Admin Products',
 				path: '/admin/products',
+				isAuthenticated: req.isLoggedIn,
 			});
 		})
 		.catch(err => console.log(err));
 };
 
+/** @type {import("express").RequestHandler} */
 exports.postDeleteProduct = (req, res, next) => {
 	const prodId = req.body.productId;
 	Product.findByIdAndDelete(prodId)
