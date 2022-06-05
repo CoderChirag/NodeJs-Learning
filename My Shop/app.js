@@ -4,9 +4,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
+
+const MONGODB_URI = `mongodb+srv://coder:${process.env.DB_PWD}@cluster0.iovzfcd.mongodb.net/shop?retryWrites=true&w=majority`;
+let Mongo_Client;
 
 const app = express();
 
@@ -28,6 +32,11 @@ app.use(
 			secure: false,
 			maxAge: 1000 * 60 * 60 * 24, //One day
 		},
+		store: MongoStore.create({
+			client: Mongo_Client,
+			mongoUrl: MONGODB_URI,
+			collectionName: 'sessions',
+		}),
 	})
 );
 
@@ -47,10 +56,9 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-	.connect(
-		`mongodb+srv://coder:${process.env.DB_PWD}@cluster0.iovzfcd.mongodb.net/shop?retryWrites=true&w=majority`
-	)
+	.connect(MONGODB_URI)
 	.then(result => {
+		Mongo_Client = result;
 		console.log('Database Connected');
 		User.findOne().then(user => {
 			if (!user) {
