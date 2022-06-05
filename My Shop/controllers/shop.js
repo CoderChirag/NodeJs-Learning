@@ -51,7 +51,7 @@ exports.getIndex = (req, res, next) => {
 /** @type {import("express").RequestHandler} */
 exports.getCart = (req, res, next) => {
 	if (!req.session.isAuthenticated) return res.redirect('/login');
-	req.session.user
+	req.user
 		.populate('cart.items.product')
 		.then(user => {
 			res.render('shop/cart', {
@@ -70,7 +70,7 @@ exports.postCart = (req, res, next) => {
 	const prodId = req.body.productId;
 	Product.findById(prodId)
 		.then(product => {
-			return req.session.user.addToCart(product);
+			return req.user.addToCart(product);
 		})
 		.then(result => {
 			res.redirect('/cart');
@@ -82,7 +82,7 @@ exports.postCart = (req, res, next) => {
 exports.postDeleteCartProducts = (req, res, next) => {
 	if (!req.session.isAuthenticated) return res.redirect('/login');
 	const prodId = req.body.productId;
-	req.session.user
+	req.user
 		.removeFromCart(prodId)
 		.then(result => {
 			res.redirect('/cart');
@@ -93,7 +93,7 @@ exports.postDeleteCartProducts = (req, res, next) => {
 /** @type {import("express").RequestHandler} */
 exports.getOrders = (req, res, next) => {
 	if (!req.session.isAuthenticated) return res.redirect('/login');
-	Order.find({ 'user.userId': req.session.user })
+	Order.find({ 'user.userId': req.user })
 		.then(orders => {
 			res.render('shop/orders', {
 				path: '/orders',
@@ -108,7 +108,7 @@ exports.getOrders = (req, res, next) => {
 /** @type {import("express").RequestHandler} */
 exports.postOrder = (req, res, next) => {
 	if (!req.session.isAuthenticated) return res.redirect('/login');
-	req.session.user
+	req.user
 		.populate('cart.items.product')
 		.then(user => {
 			const products = user.cart.items.map(i => {
@@ -116,18 +116,18 @@ exports.postOrder = (req, res, next) => {
 			});
 			const order = new Order({
 				user: {
-					name: req.session.user.name,
-					userId: req.session.user,
+					name: req.user.name,
+					userId: req.user,
 				},
 				products,
 			});
 			return order.save();
 		})
 		.then(result => {
-			req.session.user.cart = {
+			req.user.cart = {
 				items: [],
 			};
-			return req.session.user.save();
+			return req.user.save();
 		})
 		.then(result => {
 			res.redirect('/orders');
