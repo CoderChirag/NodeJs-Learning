@@ -40,15 +40,6 @@ app.use(
 	})
 );
 
-app.use((req, res, next) => {
-	User.findById('6295cfb0ba55eb1597517dec')
-		.then(user => {
-			req.user = user;
-			next();
-		})
-		.catch(err => console.log(err));
-});
-
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -60,18 +51,6 @@ mongoose
 	.then(result => {
 		Mongo_Client = result;
 		console.log('Database Connected');
-		User.findOne().then(user => {
-			if (!user) {
-				const user = new User({
-					name: 'coder',
-					email: 'coder@test.com',
-					cart: {
-						items: [],
-					},
-				});
-				user.save();
-			}
-		});
 		app.listen(3000);
 	})
 	.catch(err => {
