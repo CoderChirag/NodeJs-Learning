@@ -14,6 +14,7 @@ exports.getLogin = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.getSignup = (req, res, next) => {
+	if (req.session.isAuthenticated) return res.redirect('/');
 	res.render('auth/signup', {
 		path: '/signup',
 		pageTitle: 'Signup',

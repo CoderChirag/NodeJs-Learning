@@ -50,7 +50,6 @@ exports.getIndex = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.getCart = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	req.user
 		.populate('cart.items.product')
 		.then(user => {
@@ -66,7 +65,6 @@ exports.getCart = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.postCart = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	const prodId = req.body.productId;
 	Product.findById(prodId)
 		.then(product => {
@@ -80,7 +78,6 @@ exports.postCart = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.postDeleteCartProducts = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	const prodId = req.body.productId;
 	req.user
 		.removeFromCart(prodId)
@@ -92,7 +89,6 @@ exports.postDeleteCartProducts = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.getOrders = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	Order.find({ 'user.userId': req.user })
 		.then(orders => {
 			res.render('shop/orders', {
@@ -107,7 +103,6 @@ exports.getOrders = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.postOrder = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	req.user
 		.populate('cart.items.product')
 		.then(user => {

@@ -2,7 +2,6 @@ const Product = require('../models/product');
 
 /** @type {import("express").RequestHandler} */
 exports.getAddProduct = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	res.render('admin/edit-product', {
 		pageTitle: 'Add Product',
 		path: '/admin/add-product',
@@ -13,7 +12,6 @@ exports.getAddProduct = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.postAddProduct = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	const title = req.body.title;
 	const imageUrl = req.body.imageUrl;
 	const price = parseFloat(req.body.price);
@@ -22,6 +20,7 @@ exports.postAddProduct = (req, res, next) => {
 		title,
 		price,
 		description,
+
 		imageUrl,
 		user: req.user,
 	});
@@ -33,7 +32,6 @@ exports.postAddProduct = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.getEditProduct = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	const editMode = req.query.edit;
 	if (!editMode) {
 		return res.redirect('/');
@@ -54,7 +52,6 @@ exports.getEditProduct = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.postEditProduct = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	const prodId = req.body.productId;
 	const updatedTitle = req.body.title;
 	const updatedPrice = req.body.price;
@@ -76,7 +73,6 @@ exports.postEditProduct = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.getProducts = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	Product.find()
 		.then(products => {
 			res.render('admin/products', {
@@ -91,7 +87,6 @@ exports.getProducts = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.postDeleteProduct = (req, res, next) => {
-	if (!req.session.isAuthenticated) return res.redirect('/login');
 	const prodId = req.body.productId;
 	Product.findByIdAndDelete(prodId)
 		.then(result => {
