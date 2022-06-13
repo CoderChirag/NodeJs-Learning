@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -41,6 +42,8 @@ app.use(
 	})
 );
 app.use(csrf());
+app.use(flash());
+
 app.use((req, res, next) => {
 	if (!req.session.isAuthenticated) return next();
 	User.findById(req.session.user._id)
@@ -57,8 +60,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/admin', adminRoutes);
+app.use('/auth', authRoutes);
 app.use(shopRoutes);
-app.use(authRoutes);
 
 app.use(errorController.get404);
 

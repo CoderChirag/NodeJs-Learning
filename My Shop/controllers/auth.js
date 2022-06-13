@@ -5,18 +5,32 @@ const User = require('../models/user');
 /** @type {import("express").RequestHandler} */
 exports.getLogin = (req, res, next) => {
 	if (req.session.isAuthenticated) return res.redirect('/');
+	let message = req.flash('error');
+	if (message.length > 0) {
+		message = message[0];
+	} else {
+		message = null;
+	}
 	res.render('auth/login', {
-		path: '/login',
+		path: '/auth/login',
 		pageTitle: 'Login',
+		errorMessage: message,
 	});
 };
 
 /** @type {import("express").RequestHandler} */
 exports.getSignup = (req, res, next) => {
 	if (req.session.isAuthenticated) return res.redirect('/');
+	let message = req.flash('error');
+	if (message.length > 0) {
+		message = message[0];
+	} else {
+		message = null;
+	}
 	res.render('auth/signup', {
-		path: '/signup',
+		path: '/auth/signup',
 		pageTitle: 'Signup',
+		errorMessage: message,
 	});
 };
 
@@ -42,7 +56,8 @@ exports.postLogin = (req, res, next) => {
 	return User.findOne({ email })
 		.then(user => {
 			if (!user) {
-				return res.redirect('/login');
+				req.flash('error', 'Invalid Login Credentials');
+				return res.redirect('/auth/login');
 			}
 			bcrypt
 				.compare(password, user.password)
@@ -55,7 +70,8 @@ exports.postLogin = (req, res, next) => {
 							res.redirect('/');
 						});
 					}
-					res.redirect('/login');
+					req.flash('error', 'Invalid Login Credentials');
+					return res.redirect('/auth/login');
 				})
 				.catch(err => {
 					console.log(err);
@@ -75,7 +91,8 @@ exports.postSignup = (req, res, next) => {
 	User.findOne({ email })
 		.then(user => {
 			if (user) {
-				return res.redirect('/signup');
+				req.flash('error', 'Email already exists');
+				return res.redirect('/auth/signup');
 			}
 			return bcrypt
 				.hash(password, 12)
@@ -88,7 +105,7 @@ exports.postSignup = (req, res, next) => {
 					return newUser.save();
 				})
 				.then(newUser => {
-					return res.redirect('/login');
+					return res.redirect('/auth/login');
 				})
 				.catch(err => {
 					console.log(err);

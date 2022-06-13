@@ -9,7 +9,7 @@
 			<li class="main-header__item">
 				<a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Products</a>
 			</li>
-            <% if (isAuthenticated) { %>
+			<% if (isAuthenticated) { %>
 			<li class="main-header__item">
 				<a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
 			</li>
@@ -29,11 +29,11 @@
 		</ul>
 		<ul class="main-header__item-list">
 			<li class="main-header__item">
-				<a class="<%= path === '/login' ? 'active' : '' %>" href="<%= isAuthenticated ? "/logout" : "/login" %>"><%= isAuthenticated ? "Logout" : "Login" %></a>
+				<a class="<%= path === '/auth/login' ? 'active' : '' %>" href="<%= isAuthenticated ? "/auth/logout" : "/auth/login" %>"><%= isAuthenticated ? "Logout" : "Login" %></a>
 			</li>
 			<% if(!isAuthenticated){ %>
 			<li class="main-header__item">
-				<a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup">Signup</a>
+				<a class="<%= path === '/auth/signup' ? 'active' : '' %>" href="/auth/signup">Signup</a>
 			</li>
 			<% } %>
 		</ul>
@@ -48,7 +48,7 @@
 		<li class="mobile-nav__item">
 			<a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Products</a>
 		</li>
-        <% if (isAuthenticated) { %>
+		<% if (isAuthenticated) { %>
 		<li class="mobile-nav__item">
 			<a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
 		</li>
@@ -65,11 +65,11 @@
 		</li>
 		<% } %>
 		<li class="mobile-nav__item">
-			<a class="<%= path === '/login' ? 'active' : '' %>" href="<%= isAuthenticated ? "/logout" : "/login" %>"><%= isAuthenticated ? "Logout" : "Login" %></a>
+			<a class="<%= path === '/auth/login' ? 'active' : '' %>" href="<%= isAuthenticated ? "/auth/logout" : "/auth/login" %>"><%= isAuthenticated ? "Logout" : "Login" %></a>
 		</li>
 		<% if(!isAuthenticated){ %>
 		<li class="mobile-nav__item">
-			<a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup">Signup</a>
+			<a class="<%= path === '/auth/signup' ? 'active' : '' %>" href="/auth/signup">Signup</a>
 		</li>
 		<% } %>
 	</ul>
