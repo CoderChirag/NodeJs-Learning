@@ -13,15 +13,15 @@
 		<form class="login-form" action="/auth/signup" method="POST" novalidate>
 			<div class="form-control">
 				<label for="email">E-Mail</label>
-				<input class="<%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"type="email" name="email" id="email" value="<%= oldInput ? oldInput.email : '' %>">
+				<input class="<%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput ? oldInput.email : '' %>">
 			</div>
 			<div class="form-control">
 				<label for="password">Password</label>
-				<input class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>"type="password" name="password" id="password" value="<%= oldInput ? oldInput.password : '' %>">
+				<input class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" value="<%= oldInput ? oldInput.password : '' %>">
 			</div>
 			<div class="form-control">
 				<label for="confirmPassword">Confirm Password</label>
-				<input class="<%= validationErrors.find(e => e.param === 'confirmPassword') ? 'invalid' : '' %>"type="password" name="confirmPassword" id="confirmPassword" value="<%= oldInput ? oldInput.confirmPassword : '' %>">
+				<input class="<%= validationErrors.find(e => e.param === 'confirmPassword') ? 'invalid' : '' %>" type="password" name="confirmPassword" id="confirmPassword" value="<%= oldInput ? oldInput.confirmPassword : '' %>">
 			</div>
 			<input type="hidden" name="_csrf" value="<%= csrfToken %>">
 			<button class="btn" type="submit">Signup</button>
