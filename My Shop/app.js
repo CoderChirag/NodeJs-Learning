@@ -45,25 +45,41 @@ app.use(csrf());
 app.use(flash());
 
 app.use((req, res, next) => {
-	if (!req.session.isAuthenticated) return next();
-	User.findById(req.session.user._id)
-		.then(user => {
-			req.user = user;
-			next();
-		})
-		.catch(err => console.log(err));
-});
-app.use((req, res, next) => {
 	res.locals.isAuthenticated = req.session.isAuthenticated;
 	res.locals.csrfToken = req.csrfToken();
 	next();
+});
+
+app.use((req, res, next) => {
+	if (!req.session.isAuthenticated || !req.session.user) {
+		return next();
+	}
+	User.findById(req.session.user._id)
+		.then(user => {
+			if (!user) {
+				return next();
+			}
+			req.user = user;
+			next();
+		})
+		.catch(err => {
+			err.httpSatusCode = 500;
+			next(new Error(err));
+		});
 });
 
 app.use('/admin', adminRoutes);
 app.use('/auth', authRoutes);
 app.use(shopRoutes);
 
+app.get('/500', errorController.get500);
+
 app.use(errorController.get404);
+
+app.use((error, req, res, next) => {
+	console.log(error);
+	res.redirect('/500');
+});
 
 mongoose
 	.connect(MONGODB_URI)

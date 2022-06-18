@@ -5,3 +5,11 @@ exports.get404 = (req, res, next) => {
 		path: req.url,
 	});
 };
+
+/** @type {import("express").RequestHandler} */
+exports.get500 = (req, res, next) => {
+	res.status(500).render('500', {
+		pageTitle: 'Page not found',
+		path: req.url,
+	});
+};

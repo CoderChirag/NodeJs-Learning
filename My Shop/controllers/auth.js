@@ -132,11 +132,15 @@ exports.postLogin = (req, res, next) => {
 					return res.redirect('/auth/login');
 				})
 				.catch(err => {
-					console.log(err);
+					const error = new Error(err);
+					error.httpStatusCode = 500;
+					return next(error);
 				});
 		})
 		.catch(err => {
-			console.log(err);
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
 		});
 };
 
@@ -184,7 +188,9 @@ exports.postSignup = (req, res, next) => {
 			console.log('Email Sent');
 		})
 		.catch(err => {
-			console.log(err);
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
 		});
 };
 
@@ -224,9 +230,17 @@ exports.postReset = (req, res, next) => {
 					.then(result => {
 						console.log('Email Sent');
 					})
-					.catch(err => console.log(err));
+					.catch(err => {
+						const error = new Error(err);
+						error.httpStatusCode = 500;
+						return next(error);
+					});
 			})
-			.catch(err => console.log(err));
+			.catch(err => {
+				const error = new Error(err);
+				error.httpStatusCode = 500;
+				return next(error);
+			});
 	});
 };
 
@@ -260,5 +274,9 @@ exports.postUpdatePassword = (req, res, next) => {
 					return res.redirect('/auth/login');
 				});
 		})
-		.catch(err => console.log(err));
+		.catch(err => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
+		});
 };

@@ -32,7 +32,11 @@ exports.getEditProduct = (req, res, next) => {
 				validationErrors: [],
 			});
 		})
-		.catch(err => console.log(err));
+		.catch(err => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
+		});
 };
 
 /** @type {import("express").RequestHandler} */
@@ -45,7 +49,11 @@ exports.getProducts = (req, res, next) => {
 				path: '/admin/products',
 			});
 		})
-		.catch(err => console.log(err));
+		.catch(err => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
+		});
 };
 
 /** @type {import("express").RequestHandler} */
@@ -83,10 +91,17 @@ exports.postAddProduct = (req, res, next) => {
 		imageUrl,
 		user: req.user,
 	});
-	product.save().then(product => {
-		console.log('Created Product');
-		res.redirect('/admin/products');
-	});
+	product
+		.save()
+		.then(product => {
+			console.log('Created Product');
+			res.redirect('/admin/products');
+		})
+		.catch(err => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
+		});
 };
 
 /** @type {import("express").RequestHandler} */
@@ -132,9 +147,17 @@ exports.postEditProduct = (req, res, next) => {
 					console.log('UPDATED PRODUCT!');
 					res.redirect('/admin/products');
 				})
-				.catch(err => console.log(err));
+				.catch(err => {
+					const error = new Error(err);
+					error.httpStatusCode = 500;
+					return next(error);
+				});
 		})
-		.catch(err => console.log(err));
+		.catch(err => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
+		});
 };
 
 /** @type {import("express").RequestHandler} */
@@ -146,6 +169,8 @@ exports.postDeleteProduct = (req, res, next) => {
 			res.redirect('/admin/products');
 		})
 		.catch(err => {
-			console.log(err);
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
 		});
 };
