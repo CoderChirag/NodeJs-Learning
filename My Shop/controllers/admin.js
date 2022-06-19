@@ -66,6 +66,8 @@ exports.postAddProduct = (req, res, next) => {
 
 	console.log(errors.array());
 
+	console.log(image);
+
 	if (!errors.isEmpty()) {
 		return res.status(422).render('admin/edit-product', {
 			pageTitle: 'Add Product',
@@ -78,6 +80,23 @@ exports.postAddProduct = (req, res, next) => {
 				description,
 			},
 			errorMessage: errors.array()[0].msg,
+			validationErrors: errors.array(),
+		});
+	}
+
+	if (!image) {
+		return res.status(422).render('admin/edit-product', {
+			pageTitle: 'Add Product',
+			path: '/admin/add-product',
+			editing: false,
+			hasError: true,
+			product: {
+				title,
+				price,
+				description,
+			},
+			errorMessage:
+				'Invalid file format. Please upload a valid image file.',
 			validationErrors: errors.array(),
 		});
 	}
@@ -107,7 +126,7 @@ exports.postEditProduct = (req, res, next) => {
 	const prodId = req.body.productId;
 	const updatedTitle = req.body.title;
 	const updatedPrice = req.body.price;
-	const updatedImageUrl = req.body.imageUrl;
+	const updatedImage = req.file;
 	const updatedDesc = req.body.description;
 	const errors = validationResult(req);
 
@@ -122,7 +141,6 @@ exports.postEditProduct = (req, res, next) => {
 			product: {
 				title: updatedTitle,
 				price: updatedPrice,
-				imageUrl: updatedImageUrl,
 				description: updatedDesc,
 			},
 			errorMessage: errors.array()[0].msg,
@@ -138,7 +156,12 @@ exports.postEditProduct = (req, res, next) => {
 			product.title = updatedTitle;
 			product.price = updatedPrice;
 			product.description = updatedDesc;
-			product.imageUrl = updatedImageUrl;
+			if (updatedImage) {
+				product.imageUrl = `/${updatedImage.path
+					.split('\\')
+					.slice(1)
+					.join('/')}`;
+			}
 			return product
 				.save()
 				.then(result => {

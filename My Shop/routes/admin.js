@@ -7,7 +7,7 @@ const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
+const fileStorage = multer.diskStorage({
 	destination: 'public/uploads/images',
 	filename: (req, file, cb) => {
 		cb(
@@ -19,16 +19,26 @@ const storage = multer.diskStorage({
 	},
 });
 
+const fileFilter = (req, file, cb) => {
+	if (file.mimetype.startsWith('image')) {
+		cb(null, true);
+	} else {
+		cb(null, false);
+	}
+};
+
 // /admin/add-product => GET
 router.get('/add-product', isAuth, adminController.getAddProduct);
 
 // /admin/products => GET
 router.get('/products', isAuth, adminController.getProducts);
 
+router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
+
 // /admin/add-product => POST
 router.post(
 	'/add-product',
-	multer({ storage }).single('image'),
+	multer({ storage: fileStorage, fileFilter }).single('image'),
 	[
 		body('title').isString().isLength({ min: 3 }).trim(),
 		body('price').isFloat(),
@@ -38,13 +48,11 @@ router.post(
 	adminController.postAddProduct
 );
 
-router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
-
 router.post(
 	'/edit-product',
+	multer({ storage: fileStorage, fileFilter }).single('image'),
 	[
 		body('title').isString().isLength({ min: 3 }).trim(),
-		body('imageUrl').isURL(),
 		body('price').isFloat(),
 		body('description').isLength({ min: 5, max: 400 }).trim(),
 	],

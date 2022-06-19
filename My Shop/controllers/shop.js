@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -68,6 +71,47 @@ exports.getCart = (req, res, next) => {
 			const error = new Error(err);
 			error.httpStatusCode = 500;
 			return next(error);
+		});
+};
+
+/** @type {import("express").RequestHandler} */
+exports.getInvoice = (req, res, next) => {
+	const orderId = req.params.orderId;
+	Order.findById(orderId)
+		.then(order => {
+			if (
+				!order ||
+				order.user.userId.toString() !== req.user._id.toString()
+			) {
+				return res.status(404).render('404', {
+					pageTitle: 'Page not found',
+					path: req.url,
+				});
+			}
+			const invoiceName = `${orderId}.pdf`;
+			const invoicePath = path.join(
+				__dirname,
+				'..',
+				'data',
+				'invoices',
+				invoiceName
+			);
+			res.setHeader('Content-Type', 'application/pdf');
+			res.setHeader(
+				'Content-Disposition',
+				`inline; filename="${invoiceName}"`
+			);
+			fs.createReadStream(invoicePath).pipe(res);
+		})
+		.catch(err => {
+			if (err.kind === 'ObjectId') {
+				return res.status(404).render('404', {
+					pageTitle: 'Page not found',
+					path: req.url,
+				});
+			}
+			err.httpStatusCode = 500;
+			return next(err);
 		});
 };
 
