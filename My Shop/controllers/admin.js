@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const Product = require('../models/product');
 const { validationResult } = require('express-validator');
 
@@ -157,6 +160,14 @@ exports.postEditProduct = (req, res, next) => {
 			product.price = updatedPrice;
 			product.description = updatedDesc;
 			if (updatedImage) {
+				fs.rm(
+					path.join(__dirname, '..', 'public', product.imageUrl),
+					err => {
+						if (err) {
+							console.log(err);
+						}
+					}
+				);
 				product.imageUrl = `/${updatedImage.path
 					.split('\\')
 					.slice(1)
@@ -184,7 +195,18 @@ exports.postEditProduct = (req, res, next) => {
 /** @type {import("express").RequestHandler} */
 exports.postDeleteProduct = (req, res, next) => {
 	const prodId = req.body.productId;
-	Product.deleteOne({ _id: prodId, user: req.user })
+	Product.findOne({ _id: prodId, user: req.user })
+		.then(product => {
+			fs.rm(
+				path.join(__dirname, '..', 'public', product.imageUrl),
+				err => {
+					if (err) {
+						console.log(err);
+					}
+				}
+			);
+			return Product.deleteOne({ _id: prodId, user: req.user });
+		})
 		.then(result => {
 			console.log('DELETED PRODUCT');
 			res.redirect('/admin/products');
