@@ -59,7 +59,7 @@ exports.getProducts = (req, res, next) => {
 /** @type {import("express").RequestHandler} */
 exports.postAddProduct = (req, res, next) => {
 	const title = req.body.title;
-	const imageUrl = req.body.imageUrl;
+	const image = req.file;
 	const price = parseFloat(req.body.price);
 	const description = req.body.description;
 	const errors = validationResult(req);
@@ -74,7 +74,6 @@ exports.postAddProduct = (req, res, next) => {
 			hasError: true,
 			product: {
 				title,
-				imageUrl,
 				price,
 				description,
 			},
@@ -87,8 +86,7 @@ exports.postAddProduct = (req, res, next) => {
 		title,
 		price,
 		description,
-
-		imageUrl,
+		imageUrl: `/${image.path.split('\\').slice(1).join('/')}`,
 		user: req.user,
 	});
 	product
@@ -117,9 +115,9 @@ exports.postEditProduct = (req, res, next) => {
 
 	if (!errors.isEmpty()) {
 		return res.status(422).render('admin/edit-product', {
-			pageTitle: 'Add Product',
-			path: '/admin/add-product',
-			editing: false,
+			pageTitle: 'Edit Product',
+			path: '/admin/edit-product',
+			editing: true,
 			hasError: true,
 			product: {
 				title: updatedTitle,
