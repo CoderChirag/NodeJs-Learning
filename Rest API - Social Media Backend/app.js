@@ -1,6 +1,11 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 
 const feedRoutes = require('./routes/feed');
+
+const PORT = process.env.PORT || 8080;
+const MONGO_URI = `mongodb+srv://coder:${process.env.MONGO_PWD}@cluster0.iovzfcd.mongodb.net/social-media?retryWrites=true&w=majority`;
 
 const app = express();
 
@@ -22,8 +27,9 @@ app.use((req, res, next) => {
 
 app.use('/feed', feedRoutes);
 
-const PORT = process.env.PORT || 8080;
-
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+mongoose.connect(MONGO_URI).then(result => {
+	console.log('Database connected');
+	app.listen(PORT, () => {
+		console.log(`Server is running on port ${PORT}`);
+	});
 });
