@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use('/api/feed', feedRoutes);
+app.use('/feed', feedRoutes);
 
 const PORT = process.env.PORT || 8080;
 
