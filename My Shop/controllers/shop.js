@@ -6,14 +6,33 @@ const stripe = require('stripe')(process.env.STRIPE_KEY);
 const Product = require('../models/product');
 const Order = require('../models/order');
 
+const ITEMS_PER_PAGE = 1;
+
 /** @type {import("express").RequestHandler} */
 exports.getProducts = (req, res, next) => {
+	const page = +req.query.page || 1;
+	let totalItems;
+
 	Product.find()
+		.countDocuments()
+		.then(numProducts => {
+			totalItems = numProducts;
+			return Product.find()
+				.skip((page - 1) * ITEMS_PER_PAGE)
+				.limit(ITEMS_PER_PAGE);
+		})
 		.then(products => {
 			res.render('shop/product-list', {
 				prods: products,
-				pageTitle: 'All Products',
+				pageTitle: 'Products',
 				path: '/products',
+				totalProducts: totalItems,
+				hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+				hasPreviousPage: page > 1,
+				nextPage: page + 1,
+				previousPage: page - 1,
+				lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+				currentPage: page,
 			});
 		})
 		.catch(err => {
@@ -43,12 +62,29 @@ exports.getProduct = (req, res, next) => {
 
 /** @type {import("express").RequestHandler} */
 exports.getIndex = (req, res, next) => {
+	const page = +req.query.page || 1;
+	let totalItems;
+
 	Product.find()
+		.countDocuments()
+		.then(numProducts => {
+			totalItems = numProducts;
+			return Product.find()
+				.skip((page - 1) * ITEMS_PER_PAGE)
+				.limit(ITEMS_PER_PAGE);
+		})
 		.then(products => {
 			res.render('shop/index', {
 				prods: products,
 				pageTitle: 'Shop',
 				path: '/',
+				totalProducts: totalItems,
+				hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+				hasPreviousPage: page > 1,
+				nextPage: page + 1,
+				previousPage: page - 1,
+				lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+				currentPage: page,
 			});
 		})
 		.catch(err => {
