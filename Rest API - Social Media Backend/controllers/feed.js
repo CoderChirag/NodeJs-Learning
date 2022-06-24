@@ -6,11 +6,24 @@ const Post = require('../models/post');
 
 /** @type {import('express').RequestHandler} */
 exports.getPosts = (req, res, next) => {
+	const currentPage = +req.query.page || 1;
+	const perPage = +req.query.perPage || 2;
+	let totalItems;
 	Post.find()
+		.countDocuments()
+		.then(count => {
+			totalItems = count;
+			return Post.find()
+				.skip((currentPage - 1) * perPage)
+				.limit(perPage);
+		})
 		.then(posts => {
-			return res.status(200).json({
-				message: 'Fetched posts successfully.',
+			res.status(200).json({
+				message: 'Posts fetched successfully.',
 				posts,
+				totalItems,
+				currentPage,
+				perPage,
 			});
 		})
 		.catch(err => {
