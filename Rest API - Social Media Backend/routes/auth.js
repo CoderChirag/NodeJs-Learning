@@ -14,13 +14,13 @@ router.put(
 			.isEmail()
 			.withMessage('Please enter a valid email.')
 			.custom((value, { req }) => {
+				console.log(value);
 				return User.findOne({ email: value }).then(userDoc => {
 					if (userDoc) {
 						return Promise.reject('Email address already exists.');
 					}
 				});
-			})
-			.normalizeEmail(),
+			}),
 		body('password')
 			.trim()
 			.isLength({ min: 5 })

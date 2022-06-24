@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
 
+const User = require('../models/user');
 const Post = require('../models/post');
 
 /** @type {import('express').RequestHandler} */
@@ -75,19 +76,29 @@ exports.createPost = (req, res, next) => {
 	const imageUrl = req.file.path.replace(/\\/g, '/');
 	const title = req.body.title;
 	const content = req.body.content;
+	let creator;
 	// Create post in db
 	const post = new Post({
 		title,
 		content,
 		imageUrl,
-		creator: { name: 'Coder' },
+		creator: req.userId,
 	});
 	post.save()
-		.then(post => {
-			console.log(post);
+		.then(result => {
+			console.log(result);
+			return User.findById(req.userId);
+		})
+		.then(user => {
+			creator = user;
+			user.posts.push(post);
+			return user.save();
+		})
+		.then(result => {
 			res.status(201).json({
 				message: 'Post created successfully',
 				post,
+				creator: { _id: creator._id, name: creator.name },
 			});
 		})
 		.catch(err => {
