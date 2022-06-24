@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 
+const isAuth = require('../middleware/is-auth');
 const feedController = require('../controllers/feed');
 
 const fileStorage = multer.diskStorage({
@@ -30,7 +31,7 @@ const fileFilter = (req, file, cb) => {
 const router = express.Router();
 
 // GET /feed/posts
-router.get('/posts', feedController.getPosts);
+router.get('/posts', isAuth, feedController.getPosts);
 
 // GET /feed/posts/:postId
 router.get('/posts/:postId', feedController.getPost);
