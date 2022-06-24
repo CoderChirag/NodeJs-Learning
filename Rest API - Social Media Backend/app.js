@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 
 const PORT = process.env.PORT || 8080;
 const MONGO_URI = `mongodb+srv://coder:${process.env.MONGO_PWD}@cluster0.iovzfcd.mongodb.net/social-media?retryWrites=true&w=majority`;
@@ -28,12 +29,14 @@ app.use((req, res, next) => {
 });
 
 app.use('/feed', feedRoutes);
+app.use('/auth', authRoutes);
 
 app.use((error, req, res, next) => {
 	console.log(error);
 	const status = error.statusCode || 500;
 	const message = error.message;
-	res.status(status).json({ message: message });
+	const data = error.data;
+	res.status(status).json({ message: message, data });
 });
 
 mongoose.connect(MONGO_URI).then(result => {
