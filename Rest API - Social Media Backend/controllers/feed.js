@@ -114,11 +114,11 @@ exports.updatePost = (req, res, next) => {
 				error.statusCode = 404;
 				throw error;
 			}
-			if (post.creator.id !== req.userId) {
-				const error = new Error('Not authorized.');
-				error.statusCode = 403;
-				throw error;
-			}
+			// if (post.creator.id !== req.userId) {
+			// 	const error = new Error('Not authorized.');
+			// 	error.statusCode = 403;
+			// 	throw error;
+			// }
 			if (imageUrl !== post.imageUrl) {
 				clearImage(post.imageUrl);
 			}
@@ -144,4 +144,37 @@ exports.updatePost = (req, res, next) => {
 const clearImage = filePath => {
 	filePath = path.join(__dirname, '..', filePath);
 	fs.unlink(filePath, err => console.log(err));
+};
+
+/** @type {import('express').RequestHandler} */
+exports.deletePost = (req, res, next) => {
+	const postId = req.params.postId;
+	Post.findById(postId)
+		.then(post => {
+			if (!post) {
+				const error = new Error('Could not find post.');
+				error.statusCode = 404;
+				throw error;
+			}
+			// if (post.creator.id !== req.userId) {
+			//     const error = new Error('Not authorized.');
+			//     error.statusCode = 403;
+			//     throw error;
+			// }
+			clearImage(post.imageUrl);
+			return Post.findByIdAndRemove(postId);
+		})
+		.then(result => {
+			console.log(result);
+			res.status(200).json({
+				message: 'Post deleted successfully.',
+				post: result,
+			});
+		})
+		.catch(err => {
+			if (!err.statusCode) {
+				err.statusCode = 500;
+			}
+			next(err);
+		});
 };

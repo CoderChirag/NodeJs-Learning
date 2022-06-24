@@ -177,7 +177,9 @@ class Feed extends Component {
 
 	deletePostHandler = postId => {
 		this.setState({ postsLoading: true });
-		fetch('URL')
+		fetch(`http://localhost:8080/feed/post/${postId}`, {
+			method: 'DELETE',
+		})
 			.then(res => {
 				if (res.status !== 200 && res.status !== 201) {
 					throw new Error('Deleting a post failed!');
