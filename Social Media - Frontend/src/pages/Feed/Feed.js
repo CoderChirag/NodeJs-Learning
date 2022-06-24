@@ -129,6 +129,9 @@ class Feed extends Component {
 
 		fetch(url, {
 			method,
+			headers: {
+				Authorization: 'Bearer ' + this.props.token,
+			},
 			body: formData,
 		})
 			.then(res => {
@@ -183,6 +186,9 @@ class Feed extends Component {
 		this.setState({ postsLoading: true });
 		fetch(`http://localhost:8080/feed/post/${postId}`, {
 			method: 'DELETE',
+			headers: {
+				Authorization: 'Bearer ' + this.props.token,
+			},
 		})
 			.then(res => {
 				if (res.status !== 200 && res.status !== 201) {

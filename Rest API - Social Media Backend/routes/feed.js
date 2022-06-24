@@ -34,11 +34,12 @@ const router = express.Router();
 router.get('/posts', isAuth, feedController.getPosts);
 
 // GET /feed/posts/:postId
-router.get('/posts/:postId', feedController.getPost);
+router.get('/posts/:postId', isAuth, feedController.getPost);
 
 // POST /feed/post
 router.post(
 	'/post',
+	isAuth,
 	multer({ storage: fileStorage, fileFilter }).single('image'),
 	[
 		body('title').trim().isLength({ min: 5 }),
@@ -50,6 +51,7 @@ router.post(
 // PUT /feed/post/:postId
 router.put(
 	'/post/:postId',
+	isAuth,
 	multer({ storage: fileStorage, fileFilter }).single('image'),
 	[
 		body('title').trim().isLength({ min: 5 }),
@@ -59,6 +61,6 @@ router.put(
 );
 
 // DELETE /feed/post/:postId
-router.delete('/post/:postId', feedController.deletePost);
+router.delete('/post/:postId', isAuth, feedController.deletePost);
 
 module.exports = router;
