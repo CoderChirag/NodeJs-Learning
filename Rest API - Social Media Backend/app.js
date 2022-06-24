@@ -3,8 +3,9 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 
-const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+const feedRoutes = require('./routes/feed');
+const statusRoutes = require('./routes/status');
 
 const PORT = process.env.PORT || 8080;
 const MONGO_URI = `mongodb+srv://coder:${process.env.MONGO_PWD}@cluster0.iovzfcd.mongodb.net/social-media?retryWrites=true&w=majority`;
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
+app.use('/', statusRoutes);
 
 app.use((error, req, res, next) => {
 	console.log(error);
