@@ -48,20 +48,6 @@ mongoose
 		const server = app.listen(PORT, () => {
 			console.log(`Server is running on port ${PORT}`);
 		});
-		const io = require('socket.io')(server, {
-			cors: {
-				origin: '*',
-				methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-				allowedHeaders: 'Content-Type, Authorization',
-			},
-		});
-		io.on('connection', socket => {
-			console.log('Client connected', socket.id);
-			console.log(`Active Clients: ${io.engine.clientsCount}`);
-			socket.on('disconnect', () => {
-				console.log('Client disconnected', socket.id);
-				console.log(`Active Clients: ${io.engine.clientsCount}`);
-			});
-		});
+		const io = require('./socket').init(server);
 	})
 	.catch(err => console.log(err));
