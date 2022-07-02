@@ -1,5 +1,4 @@
-const path = require('path');
-const fs = require('fs');
+const clearImage = require('../utils/file').clearImage;
 
 exports.uploadFile = async (req, res, next) => {
 	if (!req.isAuthenticated) {
@@ -17,9 +16,4 @@ exports.uploadFile = async (req, res, next) => {
 		message: 'File Stored',
 		filePath: req.file.path.replace(/\\/g, '/'),
 	});
-};
-
-const clearImage = filePath => {
-	filePath = path.join(__dirname, '..', filePath);
-	fs.unlink(filePath, err => console.log(err));
 };
