@@ -2,6 +2,10 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
+const { graphqlHTTP } = require('express-graphql');
+
+const graphqlSchema = require('./graphql/schema');
+const graphqlResolvers = require('./graphql/resolvers');
 
 const PORT = process.env.PORT || 8080;
 const MONGO_URI = `mongodb+srv://coder:${process.env.MONGO_PWD}@cluster0.iovzfcd.mongodb.net/social-media?retryWrites=true&w=majority`;
@@ -24,6 +28,24 @@ app.use((req, res, next) => {
 	);
 	next();
 });
+
+app.use(
+	'/graphql',
+	graphqlHTTP({
+		schema: graphqlSchema,
+		rootValue: graphqlResolvers,
+		graphiql: true,
+		customFormatErrorFn(err) {
+			if (!err.originalError) {
+				return err;
+			}
+			const data = err.originalError.data;
+			const message = err.message || 'An error occurred.';
+			const statusCode = err.originalError.statusCode || 500;
+			return { message, statusCode, data };
+		},
+	})
+);
 
 app.use((error, req, res, next) => {
 	console.log(error);
