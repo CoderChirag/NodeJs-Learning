@@ -246,4 +246,45 @@ module.exports = {
 		await user.save();
 		return true;
 	},
+	user: async function (args, req) {
+		if (!req.isAuthenticated) {
+			const error = new Error('Not authenticated!');
+			error.code = 401;
+			throw error;
+		}
+		const user = await User.findById(req.userId);
+		if (!user) {
+			const error = new Error('User not found!');
+			error.statusCode = 404;
+			throw error;
+		}
+		return {
+			...user._doc,
+			_id: user._id.toString(),
+		};
+	},
+	updateUserStatus: async function ({ status }, req) {
+		if (!req.isAuthenticated) {
+			const error = new Error('Not authenticated!');
+			error.code = 401;
+			throw error;
+		}
+		const user = await User.findById(req.userId);
+		if (!user) {
+			const error = new Error('User not found!');
+			error.statusCode = 404;
+			throw error;
+		}
+		if (user._id.toString() !== req.userId.toString()) {
+			const error = new Error('Not authorized!');
+			error.statusCode = 403;
+			throw error;
+		}
+		user.status = status;
+		await user.save();
+		return {
+			...user._doc,
+			_id: user._id.toString(),
+		};
+	},
 };
