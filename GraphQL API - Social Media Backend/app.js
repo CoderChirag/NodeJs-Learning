@@ -6,6 +6,7 @@ const { graphqlHTTP } = require('express-graphql');
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolvers = require('./graphql/resolvers');
+const auth = require('./middleware/auth');
 
 const PORT = process.env.PORT || 8080;
 const MONGO_URI = `mongodb+srv://coder:${process.env.MONGO_PWD}@cluster0.iovzfcd.mongodb.net/social-media?retryWrites=true&w=majority`;
@@ -31,6 +32,8 @@ app.use((req, res, next) => {
 	}
 	next();
 });
+
+app.use(auth);
 
 app.use(
 	'/graphql',
