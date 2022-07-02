@@ -63,6 +63,7 @@ class Feed extends Component {
                             _id
                             title
                             content
+                            imageUrl
                             creator {
                                 name
                             }
@@ -153,14 +154,25 @@ class Feed extends Component {
 			editLoading: true,
 		});
 		const formData = new FormData();
-		formData.append('title', postData.title);
-		formData.append('content', postData.content);
 		formData.append('image', postData.image);
+		if (this.state.editPost) {
+			formData.append('oldPath', this.state.editPost.imagePath);
+		}
 
-		let graphqlQuery = {
-			query: `
+		fetch('http://localhost:8080/files/post-image', {
+			method: 'PUT',
+			headers: {
+				Authorization: 'Bearer ' + this.props.token,
+			},
+			body: formData,
+		})
+			.then(res => res.json())
+			.then(fileResData => {
+				const imageUrl = fileResData.filePath;
+				let graphqlQuery = {
+					query: `
                 mutation {
-                    createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "some url"}) {
+                    createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
                         _id
                         title
                         content
@@ -172,16 +184,17 @@ class Feed extends Component {
                     }
                 }
             `,
-		};
+				};
 
-		fetch('http://localhost:8080/graphql', {
-			method: 'POST',
-			headers: {
-				Authorization: 'Bearer ' + this.props.token,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(graphqlQuery),
-		})
+				return fetch('http://localhost:8080/graphql', {
+					method: 'POST',
+					headers: {
+						Authorization: 'Bearer ' + this.props.token,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(graphqlQuery),
+				});
+			})
 			.then(res => {
 				return res.json();
 			})
@@ -196,6 +209,7 @@ class Feed extends Component {
 					content: resData.data.createPost.content,
 					creator: resData.data.createPost.creator,
 					createdAt: resData.data.createPost.createdAt,
+					imagePath: resData.data.createPost.imageUrl,
 				};
 				this.setState(prevState => {
 					let updatedPosts = [...prevState.posts];
