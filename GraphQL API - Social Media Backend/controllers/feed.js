@@ -88,6 +88,7 @@ exports.createPost = async (req, res, next) => {
 		creator: req.userId,
 	});
 	try {
+<<<<<<< HEAD:GraphQL API - Social Media Backend/controllers/feed.js
 		await post.save();
 		const user = await User.findById(req.userId);
 		user.posts.push(post);
@@ -109,6 +110,25 @@ exports.createPost = async (req, res, next) => {
 			error.statusCode = 500;
 		}
 		next(error);
+=======
+		let result = await post.save();
+		console.log(result);
+		const user = await User.findById(req.userId);
+		creator = user;
+		user.posts.push(post);
+		const savedUser = await user.save();
+		res.status(201).json({
+			message: 'Post created successfully',
+			post,
+			creator: { _id: creator._id, name: creator.name },
+		});
+		return savedUser;
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+		}
+		next(err);
+>>>>>>> testing:Rest API - Social Media Backend/controllers/feed.js
 	}
 };
 
