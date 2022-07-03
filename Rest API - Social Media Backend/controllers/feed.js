@@ -61,7 +61,7 @@ exports.getPost = (req, res, next) => {
 };
 
 /** @type {import('express').RequestHandler} */
-exports.createPost = (req, res, next) => {
+exports.createPost = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		const error = new Error(
@@ -86,29 +86,25 @@ exports.createPost = (req, res, next) => {
 		imageUrl,
 		creator: req.userId,
 	});
-	post.save()
-		.then(result => {
-			console.log(result);
-			return User.findById(req.userId);
-		})
-		.then(user => {
-			creator = user;
-			user.posts.push(post);
-			return user.save();
-		})
-		.then(result => {
-			res.status(201).json({
-				message: 'Post created successfully',
-				post,
-				creator: { _id: creator._id, name: creator.name },
-			});
-		})
-		.catch(err => {
-			if (!err.statusCode) {
-				err.statusCode = 500;
-			}
-			next(err);
+	try {
+		let result = await post.save();
+		console.log(result);
+		const user = await User.findById(req.userId);
+		creator = user;
+		user.posts.push(post);
+		const savedUser = await user.save();
+		res.status(201).json({
+			message: 'Post created successfully',
+			post,
+			creator: { _id: creator._id, name: creator.name },
 		});
+		return savedUser;
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+		}
+		next(err);
+	}
 };
 
 /** @type {import('express').RequestHandler} */
