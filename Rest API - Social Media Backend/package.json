@@ -21,6 +21,7 @@
 		"mocha": "^10.0.0",
 		"mongoose": "^6.4.0",
 		"multer": "^1.4.5-lts.1",
+		"sinon": "^14.0.0",
 		"uuid": "^8.3.2"
 	},
 	"devDependencies": {
