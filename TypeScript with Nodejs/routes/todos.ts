@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
 
 router.post('/todo', (req, res, next) => {
 	const newTodo: Todo = {
-		id: new Date().toISOString(),
+		id: Date.now().toString(),
 		text: req.body.text,
 	};
 
@@ -30,13 +30,17 @@ router.put('/todo/:todoId', (req, res, next) => {
 		id: todos[todoIndex].id,
 		text: req.body.text,
 	};
-	return res
-		.status(100)
-		.json({ message: 'Todo Updated', todo: todos[todoIndex], todos });
+	return res.status(200).json({
+		message: 'Todo Updated',
+		todo: todos[todoIndex],
+		todos,
+	});
 });
 
 router.delete('/todo/:todoId', (req, res, next) => {
+	console.log(req.params.todoId);
 	todos = todos.filter(todoItem => todoItem.id !== req.params.todoId);
+	console.log(todos);
 	res.status(200).json({ message: 'Todo Deleted', todos });
 });
 
