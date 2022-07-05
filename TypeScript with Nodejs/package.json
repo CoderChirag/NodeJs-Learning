@@ -5,8 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "cd ./dist && node app.js",
-		"dev": "cd ./dist && nodemon app.js"
+		"start": "node dist/app.js",
+		"dev": "nodemon dist/app.js",
+		"build": "tsc"
 	},
 	"keywords": [],
 	"author": "",
